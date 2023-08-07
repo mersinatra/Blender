@@ -1,0 +1,62 @@
+# Import the necessary modules for Blender scripting
+import bpy
+import mathutils
+
+# Clear any existing mesh objects from the scene
+bpy.ops.object.select_all(action='SELECT')
+bpy.ops.object.delete()
+
+# Define the size of each cube and the desired spacing between them
+cube_size = 0.5 # The length of each side of the cube
+cube_spacing = 0.1 # The distance between two adjacent cubes
+
+# Create a dictionary letter_positions that maps each letter of the target phrase to its corresponding x-coordinate along the x-axis
+# Adjust the coordinates to ensure even spacing
+letter_positions = {
+    'M': -4.5,
+    'E': -3.9,
+    'R': -3.3,
+    'S': -2.7,
+    ' ': -2.1,
+    'O': -1.5,
+    'N': -0.9,
+    'Y': -0.3,
+    'P': 0.3,
+    'R': 0.9,
+    'O': 1.5,
+    'D': 2.1,
+    'U': 2.7,
+    'C': 3.3,
+    'T': 3.9,
+    'I': 4.5,
+    'O': 5.1,
+    'N': 5.7,
+    'S': 6.3
+}
+
+# For each letter in letter_positions:
+for letter, x in letter_positions.items():
+    # Create a cube with the specified size and position it at the respective x-coordinate
+    bpy.ops.mesh.primitive_cube_add(size=cube_size, location=(x, 0, 0))
+    
+    # Convert the cube to a text object and set its content to the current letter
+    bpy.ops.object.convert(target='FONT')
+    bpy.context.object.data.body = letter
+    
+    # Adjust the cube's size and origin to properly display the letter
+    bpy.context.object.data.size = cube_size
+    bpy.context.object.data.align_x = 'CENTER'
+    bpy.context.object.data.align_y = 'CENTER'
+    
+# Configure the camera's location and rotation to capture the entire scene
+bpy.data.objects['Camera'].location = (1, -10, 2)
+bpy.data.objects['Camera'].rotation_euler = (mathutils.Euler((math.radians(15), 0, math.radians(10))))
+
+# Set the render settings to use the Cycles engine and specify the output file format (e.g., PNG)
+bpy.context.scene.render.engine = 'CYCLES'
+bpy.context.scene.render.image_settings.file_format = 'PNG'
+
+# Render the scene and save the output image to a specified file path
+output_path = '/path/to/output/image.png' # Change this to your desired file path
+bpy.context.scene.render.filepath = output_path
+bpy.ops.render.render(write_still=True)
